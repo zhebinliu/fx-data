@@ -1,0 +1,13 @@
+[
+  {
+    "name": "阿里云数据库",
+    "type": "postgres",
+    "host": "pgm-bp1cywh7u3vn4ga5yo.pg.rds.aliyuncs.com",
+    "port": "5432",
+    "user": "zhebin",
+    "password": "zhebin@Fx",
+    "database": "FxTest",
+    "id": "b99ba201-223d-4a44-a37e-cb4e192277ff",
+    "createdAt": "2026-01-16T09:53:29.792Z"
+  }
+]

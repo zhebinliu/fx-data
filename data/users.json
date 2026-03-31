@@ -1,0 +1,65 @@
+[
+  {
+    "id": "admin_001",
+    "username": "admin",
+    "password": "123",
+    "role": "admin",
+    "name": "刘喆斌",
+    "permissions": [
+      "*"
+    ],
+    "preferences": {
+      "theme": "light",
+      "primaryColor": "#722ED1",
+      "aiConfig": {
+        "apiKey": "sk-7e5cc822f1794380ac8dfd448a01a69a",
+        "provider": "qwen",
+        "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "model": "qwen-plus"
+      }
+    }
+  },
+  {
+    "id": "1768789935444",
+    "username": "an",
+    "password": "123",
+    "name": "晖哥",
+    "role": "admin",
+    "permissions": [
+      "import",
+      "update",
+      "query",
+      "process",
+      "workflow"
+    ],
+    "preferences": {
+      "theme": "light",
+      "primaryColor": "#F53F3F"
+    }
+  },
+  {
+    "id": "1768790011129",
+    "username": "make",
+    "password": "123",
+    "name": "马可",
+    "role": "user",
+    "permissions": [
+      "import",
+      "update",
+      "query"
+    ]
+  },
+  {
+    "id": "1768819788050",
+    "username": "gaoyang",
+    "password": "123",
+    "name": "高洋",
+    "role": "user",
+    "permissions": [
+      "update",
+      "import",
+      "query",
+      "process"
+    ]
+  }
+]

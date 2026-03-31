@@ -1,0 +1,33 @@
+[
+  {
+    "name": "数据处理一体化",
+    "steps": [
+      {
+        "id": "4f227462-ee4b-4134-8bd7-73512730fdae",
+        "type": "SOURCE_DB",
+        "name": "加载数据",
+        "config": {
+          "connectionId": "b99ba201-223d-4a44-a37e-cb4e192277ff",
+          "table": "opportunity"
+        }
+      },
+      {
+        "id": "b929443b-f7e7-42b5-aef6-7dc485e5e9d4",
+        "type": "TRANSFORM_VLOOKUP",
+        "name": "VLookup",
+        "config": {
+          "operationType": "VLOOKUP_AUTO",
+          "lookupConnectionId": "b99ba201-223d-4a44-a37e-cb4e192277ff",
+          "localKey": "account",
+          "lookupKey": "name",
+          "lookupReturnColumn": "_id",
+          "targetColumn": "accound_id",
+          "lookupTable": "account"
+        }
+      }
+    ],
+    "id": "be726b14-fddb-43f0-8f8a-013a60916fb7",
+    "createdAt": "2026-01-17T20:25:33.419Z",
+    "updatedAt": "2026-01-18T13:36:04.669Z"
+  }
+]

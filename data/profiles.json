@@ -1,0 +1,13 @@
+{
+  "profiles": [
+    {
+      "id": "default",
+      "name": "默认配置",
+      "appId": "FSAID_1320fa0",
+      "appSecret": "ca95467d0d42435991bcb60f452eb502",
+      "permanentCode": "B28EFB386DAC9CB5BCC96B24E7CAA8CF",
+      "currentOpenUserId": "FSUID_EE91CFA2C720333175E461A438AC0F34"
+    }
+  ],
+  "activeProfileId": "default"
+}
