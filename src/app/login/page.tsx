@@ -17,6 +17,23 @@ export default function LoginPage() {
         const error = searchParams.get('error');
         if (error) {
             Message.error(decodeURIComponent(error));
+            return;
+        }
+
+        const ssoToken = searchParams.get('sso_token');
+        if (ssoToken) {
+            setSsoLoading(true);
+            fetch(`/data/api/auth/sso/exchange?token=${encodeURIComponent(ssoToken)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        login(data.user);
+                    } else {
+                        Message.error('SSO 登录失败: ' + (data.error || '未知错误'));
+                    }
+                })
+                .catch(() => Message.error('SSO 登录失败，请重试'))
+                .finally(() => setSsoLoading(false));
         }
     }, [searchParams]);
 

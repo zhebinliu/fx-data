@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
-import { getUsers, saveUsers, SESSION_COOKIE_NAME } from '@/lib/auth';
+import { getUsers, saveUsers } from '@/lib/auth';
 import type { User } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs/promises';
+import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
 const FX_API_BASE = 'https://open.fxiaoke.com';
+const TOKENS_FILE = path.join(process.cwd(), 'data', 'sso_tokens.json');
 
-// 第一步：获取企业级 corpAccessToken（纷享 Open API 流程）
 async function getCorpAccessToken(): Promise<string> {
     const res = await fetch(`${FX_API_BASE}/cgi/corpAccessToken/get/V2`, {
         method: 'POST',
@@ -25,7 +27,6 @@ async function getCorpAccessToken(): Promise<string> {
     return data.corpAccessToken;
 }
 
-// 第二步：用免登码 (FSCOD_) 换取 openUserId
 async function getOpenUserIdByCode(corpAccessToken: string, code: string): Promise<string> {
     const res = await fetch(`${FX_API_BASE}/oauth2.0/getUserInfoByCode`, {
         method: 'POST',
@@ -42,10 +43,9 @@ async function getOpenUserIdByCode(corpAccessToken: string, code: string): Promi
     if (data.errorCode !== 0 || !data.data) {
         throw new Error(`通过 code 获取 openUserId 失败: ${JSON.stringify(data)}`);
     }
-    return data.data; // openUserId
+    return data.data;
 }
 
-// 第三步：用 openUserId 获取用户详细信息
 async function getUserInfo(corpAccessToken: string, openUserId: string): Promise<any> {
     const res = await fetch(`${FX_API_BASE}/cgi/user/get`, {
         method: 'POST',
@@ -63,9 +63,20 @@ async function getUserInfo(corpAccessToken: string, openUserId: string): Promise
     return data;
 }
 
-// Session 编码（与 auth.ts 保持一致）
-function encodeSession(user: User): string {
-    return Buffer.from(`${user.id}:${user.role}:${user.username}`).toString('base64');
+// 保存一次性 token（60 秒有效）
+async function saveSsoToken(token: string, userId: string): Promise<void> {
+    let tokens: Record<string, { userId: string; expiresAt: number }> = {};
+    try {
+        const raw = await fs.readFile(TOKENS_FILE, 'utf-8');
+        tokens = JSON.parse(raw);
+    } catch {}
+    // 清理过期 token
+    const now = Date.now();
+    for (const k of Object.keys(tokens)) {
+        if (tokens[k].expiresAt < now) delete tokens[k];
+    }
+    tokens[token] = { userId, expiresAt: now + 60_000 };
+    await fs.writeFile(TOKENS_FILE, JSON.stringify(tokens), 'utf-8');
 }
 
 export async function GET(request: Request) {
@@ -79,22 +90,14 @@ export async function GET(request: Request) {
     }
 
     try {
-        // 1. 获取企业 corpAccessToken
         const corpAccessToken = await getCorpAccessToken();
-
-        // 2. 用免登码换取 openUserId
         const openUserId = await getOpenUserIdByCode(corpAccessToken, code);
-
-        // 3. 用 openUserId 获取用户详细信息
         const profile = await getUserInfo(corpAccessToken, openUserId);
         const displayName = profile.name || profile.nickName || profile.account || openUserId;
 
-        // 4. 在本地 users.json 中查找或自动创建该纷享用户
         const users = await getUsers();
         let user = users.find(u => u.username === `fx_${openUserId}`);
-
         if (!user) {
-            // 自动注册：首次纷享免登的用户，默认普通用户权限
             user = {
                 id: uuidv4(),
                 username: `fx_${openUserId}`,
@@ -107,20 +110,11 @@ export async function GET(request: Request) {
             await saveUsers(users);
         }
 
-        // 4. 设置 Session Cookie — 必须直接设置在 redirect response 上，
-        //    用 cookies().set() 无效（它作用于不同的响应对象）
-        const token = encodeSession(user);
-        const response = NextResponse.redirect(`${baseUrl}/`);
-        response.cookies.set(SESSION_COOKIE_NAME, token, {
-            httpOnly: true,
-            secure: process.env.COOKIE_SECURE === 'true',
-            sameSite: 'lax',
-            path: '/',
-            maxAge: 60 * 60 * 24 * 7, // 7 天
-        });
+        // 生成一次性 token，重定向到登录页由前端完成同源 cookie 设置
+        const ssoToken = uuidv4();
+        await saveSsoToken(ssoToken, user.id);
 
-        // 5. 登录成功，跳转到首页
-        return response;
+        return NextResponse.redirect(`${baseUrl}/login?sso_token=${ssoToken}`);
 
     } catch (error: any) {
         console.error('SSO callback error:', error);
