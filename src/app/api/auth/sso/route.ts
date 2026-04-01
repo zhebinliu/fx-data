@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 // 纷享 OAuth2 授权发起接口
 // 访问此接口会 302 跳转到纷享的用户授权页面
 export async function GET(request: Request) {

@@ -4,6 +4,8 @@ import fs from 'fs';
 import path from 'path';
 import { getCurrentUser } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 const DATA_DIR = path.join(process.cwd(), 'data');
 
 export async function GET() {

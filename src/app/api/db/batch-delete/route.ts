@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { createConnection } from 'mysql2/promise';
 import { Client } from 'pg';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
     try {
         const body = await req.json();

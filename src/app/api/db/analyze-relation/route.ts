@@ -4,6 +4,8 @@ import mysql from 'mysql2/promise';
 import { Client as PgClient } from 'pg';
 import { FxClient } from '@/lib/fxcrm';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
     try {
         const body = await request.json();

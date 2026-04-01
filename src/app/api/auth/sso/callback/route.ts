@@ -4,6 +4,8 @@ import { getUsers, saveUsers, SESSION_COOKIE_NAME } from '@/lib/auth';
 import type { User } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
 
+export const dynamic = 'force-dynamic';
+
 const FX_API_BASE = 'https://open.fxiaoke.com';
 
 // 第一步：用 AppID + AppSecret 获取 corpAccessToken

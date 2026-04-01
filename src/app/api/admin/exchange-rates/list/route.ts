@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getRates } from '@/lib/exchange-rates-store';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
         const rates = getRates();

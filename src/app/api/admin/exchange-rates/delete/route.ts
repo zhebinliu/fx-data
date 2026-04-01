@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { deleteRate } from '@/lib/exchange-rates-store';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
     try {
         const body = await request.json();
