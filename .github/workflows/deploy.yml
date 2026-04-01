@@ -22,9 +22,10 @@ jobs:
             # 您需要在 GitHub Secrets 里提前配好（例如：/root/fx-data）
             cd ${{ secrets.SERVER_TARGET_PATH }}
             
-            # 拉取 GitHub 上的最新代码
+            # 拉取 GitHub 上的最新代码（强制覆盖服务器本地改动，防止冲突导致 pull 失败）
             echo "Pulling latest code from main branch..."
-            git pull origin main
+            git fetch origin
+            git reset --hard origin/main
             
             # 赋予权限并执行您原本写好的 deploy.sh 脚本
             echo "Running deployment script..."
