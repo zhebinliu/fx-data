@@ -17,7 +17,7 @@ services:
       - FX_APP_SECRET=f64ce0f9718348f3b6666dd46aa8da4b
       - FX_CORP_ID=FSCID_3A04FE83E84673C8557C080F622A26C8
       # 回调地址：替换为您的真实服务器域名或IP
-      - FX_REDIRECT_URI=http://YOUR_SERVER_IP/data/api/auth/sso/callback
+      - FX_REDIRECT_URI=https://sharewb.cloud/data/api/auth/sso/callback
       # 如有永久授权码则填写，企业自建应用通常留空
       - FX_PERMANENT_CODE=
     # 如果需要持久化数据，可以添加 volumes
