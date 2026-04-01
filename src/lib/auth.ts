@@ -134,14 +134,28 @@ export async function getCurrentUser(): Promise<User | null> {
     if (!token) return null;
 
     const session = decodeSession(token);
-    if (!session) return null;
+    if (!session || !session.id || !session.username) return null;
 
-    // Optional: Re-verify against DB to ensure user still exists/active
     const users = await getUsers();
-    const user = users.find(u => u.id === session.id);
+    let user = users.find(u => u.id === session.id);
+
+    // SSO 用户 session 有效但 users.json 里找不到（如重新部署后数据丢失），自动重建
+    if (!user && session.username.startsWith('fx_')) {
+        user = {
+            id: session.id,
+            username: session.username,
+            role: 'user',
+            name: session.username.replace(/^fx_/, ''),
+            permissions: ['import', 'update', 'query', 'process', 'workflow'],
+            preferences: { theme: 'light', primaryColor: '#165DFF' },
+        };
+        users.push(user);
+        await saveUsers(users);
+    }
+
     if (!user) return null;
 
-    const { password: _, ...safeUser } = user;
+    const { password: _, ...safeUser } = user as any;
     return safeUser;
 }
 
