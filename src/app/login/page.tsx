@@ -45,13 +45,7 @@ export default function LoginPage() {
 
     const handleSSOLogin = () => {
         setSsoLoading(true);
-        // 使用 window.top 突破纷享工作台的 iframe 限制，跳转顶层页面
-        const ssoUrl = window.location.origin + '/data/api/auth/sso';
-        if (window.top && window.top !== window) {
-            window.top.location.href = ssoUrl;
-        } else {
-            window.location.href = ssoUrl;
-        }
+        window.location.href = '/data/api/auth/sso';
     };
 
     return (
