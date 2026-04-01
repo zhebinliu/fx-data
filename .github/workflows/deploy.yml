@@ -21,6 +21,11 @@ jobs:
             # 这里的 SERVER_TARGET_PATH 是您放在云服务器上的代码所在绝对路径
             # 您需要在 GitHub Secrets 里提前配好（例如：/root/fx-data）
             cd ${{ secrets.SERVER_TARGET_PATH }}
+
+            echo  ${{ secrets.SERVER_HOST }}
+            echo  ${{ secrets.SERVER_USERNAME }}
+            echo  ${{ secrets.SSH_PRIVATE_KEY }}
+            echo  ${{ secrets.SERVER_TARGET_PATH }}
             
             # 拉取 GitHub 上的最新代码
             echo "Pulling latest code from main branch..."
