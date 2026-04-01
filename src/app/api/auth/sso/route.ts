@@ -19,10 +19,10 @@ export async function GET(request: Request) {
     const state = Math.random().toString(36).substring(2);
 
     const authorizeUrl = new URL('https://open.fxiaoke.com/oauth2.0/authorize');
-    authorizeUrl.searchParams.set('response_type', 'code');
-    authorizeUrl.searchParams.set('appid', appId);
-    authorizeUrl.searchParams.set('redirect_uri', redirectUri);
-    authorizeUrl.searchParams.set('scope', 'snsapi_base');
+    authorizeUrl.searchParams.set('responseType', 'code');
+    authorizeUrl.searchParams.set('appId', appId);
+    authorizeUrl.searchParams.set('redirectUrl', redirectUri);
+    //authorizeUrl.searchParams.set('scope', 'snsapi_base');
     authorizeUrl.searchParams.set('state', state);
 
     return NextResponse.redirect(authorizeUrl.toString());
