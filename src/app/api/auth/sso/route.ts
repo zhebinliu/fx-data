@@ -25,5 +25,9 @@ export async function GET(request: Request) {
     //authorizeUrl.searchParams.set('scope', 'snsapi_base');
     authorizeUrl.searchParams.set('state', state);
 
-    return NextResponse.redirect(authorizeUrl.toString());
+    const response = NextResponse.redirect(authorizeUrl.toString());
+    // 禁止任何代理/浏览器缓存此跳转
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    return response;
 }
