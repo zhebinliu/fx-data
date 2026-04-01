@@ -195,7 +195,7 @@ export function FxcrmImporter() {
 
     const fetchSavedDbConnections = async () => {
         try {
-            const res = await fetch('/api/config/db-connections');
+            const res = await fetch('/data/api/config/db-connections');
             const result = await res.json();
             if (result.success) {
                 setSavedConnections(result.connections || []);
@@ -288,7 +288,7 @@ export function FxcrmImporter() {
         setIsLoadingObjects(true)
         addLog("正在获取对象列表...")
         try {
-            const response = await fetch('/api/fxcrm/objects', {
+            const response = await fetch('/data/api/fxcrm/objects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(config)
@@ -313,7 +313,7 @@ export function FxcrmImporter() {
     const fetchObjectDescription = async (apiName: string) => {
         addLog(`正在获取对象 ${apiName} 的字段列表...`)
         try {
-            const response = await fetch('/api/fxcrm/objects/describe', {
+            const response = await fetch('/data/api/fxcrm/objects/describe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...config, apiName })
@@ -400,7 +400,7 @@ export function FxcrmImporter() {
         addLog(`已连接数据库: ${config.host} / ${config.database}. 正在获取表列表...`)
 
         try {
-            const response = await fetch('/api/db/tables', {
+            const response = await fetch('/data/api/db/tables', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(config)
@@ -432,7 +432,7 @@ export function FxcrmImporter() {
 
         try {
             // Default limit 5000 for safety, maybe configurable later
-            const response = await fetch('/api/db/query', {
+            const response = await fetch('/data/api/db/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -531,7 +531,7 @@ export function FxcrmImporter() {
                 const chunk = dbData.slice(i, i + CHUNK_SIZE);
                 addLog(`正在写入第 ${i + 1} - ${Math.min(i + CHUNK_SIZE, dbData.length)} 行...`);
 
-                const response = await fetch('/api/db/insert', {
+                const response = await fetch('/data/api/db/insert', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -665,7 +665,7 @@ export function FxcrmImporter() {
 
             addLog(`正在发送 ${validData.length} 行数据到后台 (已映射)...`)
 
-            const response = await fetch('/api/fxcrm/import', {
+            const response = await fetch('/data/api/fxcrm/import', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -867,7 +867,7 @@ export function FxcrmImporter() {
             let response;
             if (targetApiName.toLowerCase() === 'recordtype' || targetApiName.toLowerCase() === 'record_type') {
                 // Call record-types API
-                response = await fetch('/api/fxcrm/objects/record-types', {
+                response = await fetch('/data/api/fxcrm/objects/record-types', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -904,7 +904,7 @@ export function FxcrmImporter() {
 
             if (targetApiName === 'sales_process_id' || targetApiName === 'sales_stage') {
                 addLog(`正在获取 ${config.objectApiName} 的销售流程定义...`)
-                response = await fetch('/api/fxcrm/objects/sales-processes', {
+                response = await fetch('/data/api/fxcrm/objects/sales-processes', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -962,7 +962,7 @@ export function FxcrmImporter() {
 
                 // 1. Query PersonnelObj by Name to get Mobile
                 addLog(`步骤 1/2: 通过姓名查询 PersonnelObj 获取手机号...`);
-                const personnelResponse = await fetch('/api/fxcrm/data/query', {
+                const personnelResponse = await fetch('/data/api/fxcrm/data/query', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1010,7 +1010,7 @@ export function FxcrmImporter() {
                 // Helper to fetch single user
                 const fetchUser = async (mobile: string) => {
                     try {
-                        const res = await fetch('/api/fxcrm/user/get-by-mobile', {
+                        const res = await fetch('/data/api/fxcrm/user/get-by-mobile', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -1064,7 +1064,7 @@ export function FxcrmImporter() {
             }
 
             // Normal data query sync (original logic for other objects)
-            response = await fetch('/api/fxcrm/data/query', {
+            response = await fetch('/data/api/fxcrm/data/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

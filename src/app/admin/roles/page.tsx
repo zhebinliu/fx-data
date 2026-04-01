@@ -23,7 +23,7 @@ export default function RoleManagementPage() {
 
         setLoading(true);
         try {
-            const response = await fetch('/api/fxcrm/role/list', {
+            const response = await fetch('/data/api/fxcrm/role/list', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(activeProfile)

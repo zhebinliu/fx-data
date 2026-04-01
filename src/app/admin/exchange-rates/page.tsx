@@ -26,7 +26,7 @@ export default function ExchangeRatesPage() {
     const fetchRates = async () => {
         setLoading(true);
         try {
-            const response = await fetch('/api/admin/exchange-rates/list');
+            const response = await fetch('/data/api/admin/exchange-rates/list');
             const result = await response.json();
             if (result.success) {
                 setRates(result.rates);
@@ -65,7 +65,7 @@ export default function ExchangeRatesPage() {
 
     const handleDelete = async (id: string) => {
         try {
-            const response = await fetch('/api/admin/exchange-rates/delete', {
+            const response = await fetch('/data/api/admin/exchange-rates/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })
@@ -90,7 +90,7 @@ export default function ExchangeRatesPage() {
                 id: currentId // If null, backend generates new ID
             };
 
-            const response = await fetch('/api/admin/exchange-rates/update', {
+            const response = await fetch('/data/api/admin/exchange-rates/update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

@@ -52,7 +52,7 @@ export default function APLHistory() {
         setLogContent('加载中...');
         setLogVisible(true);
         try {
-            const res = await fetch(`/api/apl/tasks/${taskId}/log`);
+            const res = await fetch(`/data/api/apl/tasks/${taskId}/log`);
             const text = await res.text();
             setLogContent(text || '暂无日志');
         } catch (err: any) {
@@ -62,7 +62,7 @@ export default function APLHistory() {
 
     const handleRerun = async (taskId: string) => {
         try {
-            await fetch(`/api/apl/tasks/${taskId}/rerun`, { method: 'POST', body: JSON.stringify({}) });
+            await fetch(`/data/api/apl/tasks/${taskId}/rerun`, { method: 'POST', body: JSON.stringify({}) });
             Message.success('重新执行已按计划启动');
             loadData();
         } catch (err: any) {

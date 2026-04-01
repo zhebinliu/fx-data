@@ -133,14 +133,14 @@ export function useWorkflowRunner() {
         // So we need to fetch the connection config first.
 
         addLog("正在获取数据库连接信息...", "info", step.id);
-        const connRes = await fetch('/api/config/db-connections');
+        const connRes = await fetch('/data/api/config/db-connections');
         const connData = await connRes.json();
         const connection = connData.connections?.find((c: any) => c.id === connectionId);
 
         if (!connection) throw new Error(`找不到连接 ID: ${connectionId}`);
 
         addLog(`正在查询数据表: ${table}...`, "info", step.id);
-        const queryRes = await fetch('/api/db/query', {
+        const queryRes = await fetch('/data/api/db/query', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -198,12 +198,12 @@ export function useWorkflowRunner() {
             if (leftInputMode === 'NEW_SOURCE' && leftConnectionId && leftTable) {
                 addLog(`VLookup 左侧源: 正在从 ${leftTable} 加载新数据...`, 'info', step.id);
                 // Reuse fetch logic (copy-paste for MVP to avoid refactor risks)
-                const connRes = await fetch('/api/config/db-connections');
+                const connRes = await fetch('/data/api/config/db-connections');
                 const connData = await connRes.json();
                 const connection = connData.connections?.find((c: any) => c.id === leftConnectionId);
 
                 if (connection) {
-                    const queryRes = await fetch('/api/db/query', {
+                    const queryRes = await fetch('/data/api/db/query', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -238,13 +238,13 @@ export function useWorkflowRunner() {
             addLog(`开始执行 VLookup: 正在从 ${lookupTable} 获取字典数据...`, 'info', step.id);
 
             // Fetch Lookup Data (Reusing fetch logic)
-            const connRes = await fetch('/api/config/db-connections');
+            const connRes = await fetch('/data/api/config/db-connections');
             const connData = await connRes.json();
             const connection = connData.connections?.find((c: any) => c.id === lookupConnectionId);
 
             if (!connection) throw new Error(`找不到字典连接 ID: ${lookupConnectionId}`);
 
-            const queryRes = await fetch('/api/db/query', {
+            const queryRes = await fetch('/data/api/db/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -345,7 +345,7 @@ export function useWorkflowRunner() {
             // For now, I'll put a placeholder fetch.
 
             /*
-            await fetch('/api/fxcrm/batch-import', {
+            await fetch('/data/api/fxcrm/batch-import', {
                 method: 'POST',
                 body: JSON.stringify({
                     profile: activeProfile,

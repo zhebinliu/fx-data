@@ -42,7 +42,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const fetchProfiles = async () => {
             try {
-                const res = await fetch('/api/config/profiles');
+                const res = await fetch('/data/api/config/profiles');
                 const result = await res.json();
 
                 if (result.success) {
@@ -70,7 +70,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     const persistProfiles = async (newProfiles: ConfigProfile[], newActiveId: string) => {
         try {
             console.log("[ProfileContext] Persisting to server...", { profiles: newProfiles, activeProfileId: newActiveId });
-            const res = await fetch('/api/config/profiles', {
+            const res = await fetch('/data/api/config/profiles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

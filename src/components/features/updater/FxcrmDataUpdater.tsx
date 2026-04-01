@@ -85,7 +85,7 @@ export default function FxcrmDataUpdater() {
 
         setIsLoadingObjects(true)
         try {
-            const response = await fetch('/api/fxcrm/objects', {
+            const response = await fetch('/data/api/fxcrm/objects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(activeProfile)
@@ -111,7 +111,7 @@ export default function FxcrmDataUpdater() {
     const fetchObjectFields = async (apiName: string) => {
         setIsLoadingFields(true)
         try {
-            const response = await fetch('/api/fxcrm/objects/describe', {
+            const response = await fetch('/data/api/fxcrm/objects/describe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...activeProfile, apiName })
@@ -144,7 +144,7 @@ export default function FxcrmDataUpdater() {
     const fetchRecordList = async (apiName: string) => {
         setIsLoadingRecords(true)
         try {
-            const response = await fetch('/api/fxcrm/data/query', {
+            const response = await fetch('/data/api/fxcrm/data/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -189,7 +189,7 @@ export default function FxcrmDataUpdater() {
         setEditedData({})
 
         try {
-            const response = await fetch('/api/fxcrm/data/get', {
+            const response = await fetch('/data/api/fxcrm/data/get', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -248,7 +248,7 @@ export default function FxcrmDataUpdater() {
 
         setIsUpdating(true)
         try {
-            const response = await fetch('/api/fxcrm/data/update', {
+            const response = await fetch('/data/api/fxcrm/data/update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

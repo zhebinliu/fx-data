@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const refreshUser = async () => {
         try {
-            const res = await fetch('/api/auth/me');
+            const res = await fetch('/data/api/auth/me');
             const data = await res.json();
             if (data.success && data.user) {
                 setUser(data.user);
@@ -129,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const logout = async () => {
         try {
-            await fetch('/api/auth/logout', { method: 'POST' });
+            await fetch('/data/api/auth/logout', { method: 'POST' });
             setUser(null);
             router.push('/login');
             Message.success('已退出登录');

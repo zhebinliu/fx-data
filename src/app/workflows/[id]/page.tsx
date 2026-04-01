@@ -39,7 +39,7 @@ export default function WorkflowBuilderPage() {
     const fetchWorkflow = async (workflowId: string) => {
         try {
             setLoading(true);
-            const res = await fetch('/api/workflows');
+            const res = await fetch('/data/api/workflows');
             const data = await res.json();
             if (data.success) {
                 const wf = data.workflows.find((w: any) => w.id === workflowId);
@@ -64,7 +64,7 @@ export default function WorkflowBuilderPage() {
         if (!workflow) return;
         try {
             setSaving(true);
-            const res = await fetch('/api/workflows', {
+            const res = await fetch('/data/api/workflows', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

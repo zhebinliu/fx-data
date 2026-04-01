@@ -58,7 +58,7 @@ export function EditHeadersModal({ visible, onCancel, onSuccess, connection, tab
         try {
             // Check if name changed
             if (editForm.name !== originalName) {
-                const res = await fetch('/api/db/alter-table', {
+                const res = await fetch('/data/api/db/alter-table', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -97,7 +97,7 @@ export function EditHeadersModal({ visible, onCancel, onSuccess, connection, tab
                 const needsModify = (dbType === 'postgres') || (dbType === 'mysql' && editForm.name === originalName);
 
                 if (needsModify) {
-                    const res = await fetch('/api/db/alter-table', {
+                    const res = await fetch('/data/api/db/alter-table', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({

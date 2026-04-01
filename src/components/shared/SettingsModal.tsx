@@ -70,7 +70,7 @@ export function SettingsModal({ visible, onCancel }: SettingsModalProps) {
 
     const saveSettings = async (newTheme?: string, newColor?: string) => {
         try {
-            await fetch('/api/auth/profile', {
+            await fetch('/data/api/auth/profile', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

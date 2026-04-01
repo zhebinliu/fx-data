@@ -13,7 +13,7 @@ export default function LoginPage() {
     const handleSubmit = async (values: any) => {
         setLoading(true);
         try {
-            const res = await fetch('/api/auth/login', {
+            const res = await fetch('/data/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(values)
@@ -37,7 +37,7 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg-1)] bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
             <Card className="w-full max-w-md shadow-lg p-4" bordered={false}>
                 <div className="text-center mb-8">
-                    <img src="/image/fxiaoke_logonew.png" alt="Logo" className="h-10 mx-auto mb-4" />
+                    <img src="/data/image/fxiaoke_logonew.png" alt="Logo" className="h-10 mx-auto mb-4" />
                     <Typography.Title heading={4} className="m-0">工具库登录</Typography.Title>
                     <Typography.Text className="text-gray-400">fxcrm-import-tool</Typography.Text>
                 </div>

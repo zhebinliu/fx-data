@@ -74,7 +74,7 @@ export function CreateTableModal({ visible, onCancel, onSuccess, connection }: C
         setLoading(true);
         try {
             // 1. Create Table
-            const createRes = await fetch('/api/db/create-table', {
+            const createRes = await fetch('/data/api/db/create-table', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -105,7 +105,7 @@ export function CreateTableModal({ visible, onCancel, onSuccess, connection }: C
                     const CHUNK_SIZE = 1000;
                     for (let i = 0; i < allData.length; i += CHUNK_SIZE) {
                         const chunk = allData.slice(i, i + CHUNK_SIZE);
-                        await fetch('/api/db/insert', {
+                        await fetch('/data/api/db/insert', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({

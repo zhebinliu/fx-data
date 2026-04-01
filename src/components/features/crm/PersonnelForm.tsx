@@ -34,15 +34,15 @@ export function PersonnelForm({ onSuccess }: PersonnelFormProps) {
         try {
             // Parallel fetch for efficiency
             const [deptRes, roleRes, userRes] = await Promise.all([
-                fetch('/api/fxcrm/department/list', {
+                fetch('/data/api/fxcrm/department/list', {
                     method: 'POST',
                     body: JSON.stringify(activeProfile)
                 }).then(r => r.json()),
-                fetch('/api/fxcrm/role/list', {
+                fetch('/data/api/fxcrm/role/list', {
                     method: 'POST',
                     body: JSON.stringify(activeProfile)
                 }).then(r => r.json()),
-                fetch('/api/fxcrm/users/list', {
+                fetch('/data/api/fxcrm/users/list', {
                     method: 'POST',
                     body: JSON.stringify({ ...activeProfile })
                 }).then(r => r.json())
@@ -110,7 +110,7 @@ export function PersonnelForm({ onSuccess }: PersonnelFormProps) {
                 triggerApprovalFlow: true
             };
 
-            const response = await fetch('/api/fxcrm/user/create', {
+            const response = await fetch('/data/api/fxcrm/user/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -131,7 +131,7 @@ export function PersonnelForm({ onSuccess }: PersonnelFormProps) {
                 if (roleIds.length > 0 && fsuid) {
                     Message.loading({ id: 'role_assign', content: '人员创建成功，正在分配角色...' });
                     try {
-                        const roleRes = await fetch('/api/fxcrm/user/role/add', {
+                        const roleRes = await fetch('/data/api/fxcrm/user/role/add', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -267,7 +267,7 @@ export function PersonnelForm({ onSuccess }: PersonnelFormProps) {
                                     } else if (selectedUser.mobile) {
                                         Message.loading({ id: 'fetch_openid', content: '正在通过手机号获取 OpenID...' });
                                         try {
-                                            const res = await fetch('/api/fxcrm/user/get-by-mobile', {
+                                            const res = await fetch('/data/api/fxcrm/user/get-by-mobile', {
                                                 method: 'POST',
                                                 headers: { 'Content-Type': 'application/json' },
                                                 body: JSON.stringify({

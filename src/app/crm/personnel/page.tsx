@@ -31,7 +31,7 @@ export default function PersonnelPage() {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/fxcrm/users/list', {
+            const res = await fetch('/data/api/fxcrm/users/list', {
                 method: 'POST',
                 body: JSON.stringify({ ...activeProfile })
             });
@@ -50,7 +50,7 @@ export default function PersonnelPage() {
 
     const fetchRoles = async () => {
         try {
-            const res = await fetch('/api/fxcrm/role/list', {
+            const res = await fetch('/data/api/fxcrm/role/list', {
                 method: 'POST',
                 body: JSON.stringify(activeProfile)
             });
@@ -91,7 +91,7 @@ export default function PersonnelPage() {
 
         setSavingRole(true);
         try {
-            const roleRes = await fetch('/api/fxcrm/user/role/add', {
+            const roleRes = await fetch('/data/api/fxcrm/user/role/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

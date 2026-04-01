@@ -29,7 +29,7 @@ export function DataProcessor() {
     const handleConnect = async (config: any) => {
         setIsLoadingTables(true);
         try {
-            const response = await fetch('/api/db/tables', {
+            const response = await fetch('/data/api/db/tables', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(config)

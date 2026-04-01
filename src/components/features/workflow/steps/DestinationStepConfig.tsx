@@ -35,7 +35,7 @@ export function DestinationStepConfig({ config, onChange }: DestinationStepConfi
     const fetchObjects = async () => {
         try {
             setLoadingObjects(true);
-            const res = await fetch('/api/fxcrm/objects', {
+            const res = await fetch('/data/api/fxcrm/objects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(activeProfile)
@@ -54,7 +54,7 @@ export function DestinationStepConfig({ config, onChange }: DestinationStepConfi
     const fetchFields = async (apiName: string) => {
         try {
             setLoadingFields(true);
-            const res = await fetch('/api/fxcrm/objects/describe', {
+            const res = await fetch('/data/api/fxcrm/objects/describe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...activeProfile, apiName })

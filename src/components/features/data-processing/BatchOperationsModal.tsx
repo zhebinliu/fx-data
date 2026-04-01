@@ -66,7 +66,7 @@ export function BatchOperationsModal({ visible, onCancel, onSuccess, connection,
                     break;
             }
 
-            const res = await fetch('/api/db/batch-transform', {
+            const res = await fetch('/data/api/db/batch-transform', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

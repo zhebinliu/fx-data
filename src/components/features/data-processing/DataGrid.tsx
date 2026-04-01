@@ -63,7 +63,7 @@ export function DataGrid({ connection, tableName, allTables }: DataGridProps) {
         setSelectedRowKeys([]);
 
         try {
-            const response = await fetch('/api/db/query', {
+            const response = await fetch('/data/api/db/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -203,7 +203,7 @@ export function DataGrid({ connection, tableName, allTables }: DataGridProps) {
                 };
             });
 
-            const res = await fetch('/api/db/batch-update', {
+            const res = await fetch('/data/api/db/batch-update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -240,7 +240,7 @@ export function DataGrid({ connection, tableName, allTables }: DataGridProps) {
             const firstRow = data.find(r => r.key === selectedRowKeys[0]);
             const pkField = getPrimaryKey(firstRow);
 
-            const res = await fetch('/api/db/batch-delete', {
+            const res = await fetch('/data/api/db/batch-delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

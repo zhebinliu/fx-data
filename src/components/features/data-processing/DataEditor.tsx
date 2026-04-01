@@ -58,7 +58,7 @@ export function DataEditor({ visible, onCancel, onSuccess, connection, tableName
                     return;
                 }
 
-                const response = await fetch('/api/db/update', {
+                const response = await fetch('/data/api/db/update', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -80,7 +80,7 @@ export function DataEditor({ visible, onCancel, onSuccess, connection, tableName
 
             } else {
                 // INSERT MODE
-                const response = await fetch('/api/db/insert', {
+                const response = await fetch('/data/api/db/insert', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

@@ -40,7 +40,7 @@ export function TransformStepConfig({ config, onChange }: TransformStepConfigPro
     const fetchConnections = async () => {
         try {
             setLoadingConnections(true);
-            const res = await fetch('/api/config/db-connections');
+            const res = await fetch('/data/api/config/db-connections');
             const data = await res.json();
             if (data.success) {
                 setConnections(data.connections || []);
@@ -58,7 +58,7 @@ export function TransformStepConfig({ config, onChange }: TransformStepConfigPro
 
         try {
             setLoadingTables(true);
-            const res = await fetch('/api/db/tables', {
+            const res = await fetch('/data/api/db/tables', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(connection)

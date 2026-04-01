@@ -30,7 +30,7 @@ export function UserSelector({ value, onChange, size = 'default', style, disable
 
             setLoading(true);
             try {
-                const response = await fetch('/api/fxcrm/users/list', {
+                const response = await fetch('/data/api/fxcrm/users/list', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(activeProfile)
@@ -61,7 +61,7 @@ export function UserSelector({ value, onChange, size = 'default', style, disable
         // Find user to display name immediately if needed, but we use mobile as key for lookup
         setResolvingId(true);
         try {
-            const response = await fetch('/api/fxcrm/users/openid', {
+            const response = await fetch('/data/api/fxcrm/users/openid', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

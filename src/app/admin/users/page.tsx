@@ -32,7 +32,7 @@ export default function UserManagementPage() {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/auth/users');
+            const res = await fetch('/data/api/auth/users');
             const data = await res.json();
             if (data.success) {
                 setUsers(data.users);
@@ -69,7 +69,7 @@ export default function UserManagementPage() {
 
     const handleDelete = async (id: string) => {
         try {
-            const res = await fetch(`/api/auth/users?id=${id}`, { method: 'DELETE' });
+            const res = await fetch(`/data/api/auth/users?id=${id}`, { method: 'DELETE' });
             const data = await res.json();
             if (data.success) {
                 Message.success('删除成功');

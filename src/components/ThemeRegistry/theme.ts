@@ -1,11 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { Inter } from 'next/font/google';
 
-const inter = Inter({
-    weight: ['300', '400', '500', '700'],
-    subsets: ['latin'],
-    display: 'swap',
-});
 
 const theme = createTheme({
     palette: {
@@ -19,7 +13,7 @@ const theme = createTheme({
         },
     },
     typography: {
-        fontFamily: inter.style.fontFamily,
+        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
     },
     components: {
         MuiButton: {

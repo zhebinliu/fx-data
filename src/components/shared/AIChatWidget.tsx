@@ -65,7 +65,7 @@ Please provide helpful advice based on the current page and system capabilities.
         const systemPrompt = getSystemPrompt();
 
         try {
-            const res = await fetch('/api/ai/chat', {
+            const res = await fetch('/data/api/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

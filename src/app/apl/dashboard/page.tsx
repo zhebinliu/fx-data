@@ -48,7 +48,7 @@ export default function APLDashboard() {
     };
 
     const handleExportDocs = (project: string) => {
-        window.location.href = `/api/apl/functions/export?project=${encodeURIComponent(project)}`;
+        window.location.href = `/data/api/apl/functions/export?project=${encodeURIComponent(project)}`;
     };
 
     const recentTasks = history.length;

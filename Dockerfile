@@ -6,8 +6,9 @@ WORKDIR /app
 # 复制 package 文件
 COPY package*.json ./
 
-# 安装依赖
-RUN npm ci
+# 安装依赖 (针对国内网络和免下载 puppeteer 配置加速)
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+RUN npm ci --registry=https://registry.npmmirror.com
 
 # 复制源代码
 COPY . .

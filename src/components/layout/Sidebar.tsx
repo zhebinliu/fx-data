@@ -114,7 +114,7 @@ export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
             style={{ borderRight: '1px solid var(--color-border)' }}
         >
             <div style={{ height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid var(--color-border)' }}>
-                <img src="/image/fxiaoke_logonew.png" alt="Logo" style={{ height: 28, marginRight: collapsed ? 0 : 8 }} />
+                <img src="/data/image/fxiaoke_logonew.png" alt="Logo" style={{ height: 28, marginRight: collapsed ? 0 : 8 }} />
                 {!collapsed && <Typography.Text bold style={{ fontSize: 13, color: 'var(--color-text-2)' }}>技术预览版</Typography.Text>}
             </div>
 

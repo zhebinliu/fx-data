@@ -72,7 +72,7 @@ export default function FxcrmDataQuery() {
 
         setIsLoadingObjects(true)
         try {
-            const response = await fetch('/api/fxcrm/objects', {
+            const response = await fetch('/data/api/fxcrm/objects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(activeProfile)
@@ -103,7 +103,7 @@ export default function FxcrmDataQuery() {
         // Fetch fields
         const toastId = Message.loading("正在获取对象字段...")
         try {
-            const response = await fetch('/api/fxcrm/objects/describe', {
+            const response = await fetch('/data/api/fxcrm/objects/describe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...activeProfile, apiName: val })
@@ -152,7 +152,7 @@ export default function FxcrmDataQuery() {
             while (hasMore) {
                 setProgress(`正在加载数据... (已获取 ${fetchedCount} 条)`)
 
-                const response = await fetch('/api/fxcrm/data/query', {
+                const response = await fetch('/data/api/fxcrm/data/query', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

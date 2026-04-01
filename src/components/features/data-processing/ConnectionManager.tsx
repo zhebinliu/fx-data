@@ -23,7 +23,7 @@ export function ConnectionManager({ onConnect }: ConnectionManagerProps) {
 
     const loadSavedConnections = async () => {
         try {
-            const res = await fetch('/api/config/db-connections');
+            const res = await fetch('/data/api/config/db-connections');
             const result = await res.json();
             if (result.success) {
                 setSavedConnections(result.connections || []);
@@ -48,7 +48,7 @@ export function ConnectionManager({ onConnect }: ConnectionManagerProps) {
     const handleSave = async () => {
         try {
             const values = await form.validate();
-            const res = await fetch('/api/config/db-connections', {
+            const res = await fetch('/data/api/config/db-connections', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -72,7 +72,7 @@ export function ConnectionManager({ onConnect }: ConnectionManagerProps) {
     const handleDelete = async () => {
         if (!selectedConnectionId) return;
         try {
-            const res = await fetch('/api/config/db-connections', {
+            const res = await fetch('/data/api/config/db-connections', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

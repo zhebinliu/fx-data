@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    basePath: '/data',
     output: 'standalone',
     async rewrites() {
         return [

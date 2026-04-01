@@ -42,7 +42,7 @@ export function ProfileModal({ visible, onVisibleChange }: ProfileModalProps) {
                 return;
             }
 
-            const res = await fetch('/api/fxcrm/user/get-by-mobile', {
+            const res = await fetch('/data/api/fxcrm/user/get-by-mobile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

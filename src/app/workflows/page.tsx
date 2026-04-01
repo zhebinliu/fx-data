@@ -25,7 +25,7 @@ export default function WorkflowsPage() {
     const fetchWorkflows = async () => {
         try {
             setLoading(true);
-            const res = await fetch('/api/workflows');
+            const res = await fetch('/data/api/workflows');
             const data = await res.json();
             if (data.success) {
                 setWorkflows(data.workflows);
@@ -45,7 +45,7 @@ export default function WorkflowsPage() {
             return;
         }
         try {
-            const res = await fetch('/api/workflows', {
+            const res = await fetch('/data/api/workflows', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -77,7 +77,7 @@ export default function WorkflowsPage() {
             content: '确定要删除这个工作流吗？此操作无法撤销。',
             onOk: async () => {
                 try {
-                    const res = await fetch('/api/workflows', {
+                    const res = await fetch('/data/api/workflows', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ action: 'delete', id })

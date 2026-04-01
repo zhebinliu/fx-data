@@ -63,7 +63,7 @@ export function VLookupModal({ visible, onCancel, onSuccess, connection, tableNa
 
     const fetchSavedConnections = async () => {
         try {
-            const res = await fetch('/api/config/db-connections');
+            const res = await fetch('/data/api/config/db-connections');
             const json = await res.json();
             if (json.success) {
                 setSavedConnections(Array.isArray(json.data) ? json.data : []);
@@ -77,7 +77,7 @@ export function VLookupModal({ visible, onCancel, onSuccess, connection, tableNa
         if (!activeProfile) return;
         setFetchingCrmObjects(true);
         try {
-            const res = await fetch('/api/fxcrm/objects', {
+            const res = await fetch('/data/api/fxcrm/objects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(activeProfile)
@@ -127,7 +127,7 @@ export function VLookupModal({ visible, onCancel, onSuccess, connection, tableNa
         if (!profile) return;
         setFetchingTables(true);
         try {
-            const res = await fetch('/api/db/tables', {
+            const res = await fetch('/data/api/db/tables', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(profile.config)
@@ -157,7 +157,7 @@ export function VLookupModal({ visible, onCancel, onSuccess, connection, tableNa
         try {
             if (lookupSourceType === 'crm') {
                 if (!activeProfile) return;
-                const res = await fetch('/api/fxcrm/objects/describe', {
+                const res = await fetch('/data/api/fxcrm/objects/describe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ...activeProfile, apiName: target })
@@ -173,7 +173,7 @@ export function VLookupModal({ visible, onCancel, onSuccess, connection, tableNa
                 // DB Mode
                 // Using existing query API with limit 1 to get schema
                 const lookupConn = getLookupConnectionConfig();
-                const res = await fetch('/api/db/query', {
+                const res = await fetch('/data/api/db/query', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ...lookupConn, table: target, limit: 1 })
@@ -207,7 +207,7 @@ export function VLookupModal({ visible, onCancel, onSuccess, connection, tableNa
 
             const lookupConn = getLookupConnectionConfig();
 
-            const res = await fetch('/api/db/analyze-relation', {
+            const res = await fetch('/data/api/db/analyze-relation', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -280,7 +280,7 @@ export function VLookupModal({ visible, onCancel, onSuccess, connection, tableNa
             }
 
             // We'll send this list to a new batch endpoint
-            const res = await fetch('/api/db/batch-update', {
+            const res = await fetch('/data/api/db/batch-update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
