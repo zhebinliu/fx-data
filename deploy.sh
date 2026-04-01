@@ -20,9 +20,17 @@ fi
 echo "🛑 停止旧容器..."
 docker-compose down
 
+# 清理 Docker 构建缓存和悬空镜像，避免磁盘堆满
+echo "🧹 清理 Docker 构建缓存..."
+docker builder prune -f
+docker image prune -f
+
 # 构建新镜像
 echo "🔨 构建 Docker 镜像..."
-docker-compose build --no-cache
+if ! docker-compose build --no-cache; then
+    echo "❌ Docker 镜像构建失败！请检查上方日志。"
+    exit 1
+fi
 
 # 修复文件权限问题：提前在宿主机建立 data 目录并赋予与容器内 nextjs 用户(UID 1001)相匹配的权限，避免 EACCESS 报错
 echo "🔐 配置宿主机持久化目录权限..."
