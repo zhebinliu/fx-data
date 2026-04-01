@@ -12,6 +12,7 @@ export interface User {
     password?: string; // Only for internal use, never return to client
     role: 'admin' | 'user';
     name: string;
+    mobile?: string;
     permissions: string[]; // e.g. ['import', 'update', 'query', 'process', 'workflow']
     preferences?: {
         theme?: 'light' | 'dark';

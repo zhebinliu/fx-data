@@ -1,7 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Message } from '@arco-design/web-react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { Message, Modal, Input } from '@arco-design/web-react';
 
 export interface ConfigProfile {
     id: string;
@@ -27,7 +27,7 @@ interface ProfileContextType {
     activeProfile: ConfigProfile;
     setActiveProfileId: (id: string) => void;
     updateProfile: (profile: Partial<ConfigProfile>) => void;
-    addProfile: (name: string) => void;
+    addProfile: (profile: Omit<ConfigProfile, 'id'>) => Promise<void>;
     deleteProfile: (id: string) => void;
     saveProfiles: () => void;
 }
@@ -37,35 +37,59 @@ const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
     const [profiles, setProfiles] = useState<ConfigProfile[]>([DEFAULT_PROFILE]);
     const [activeProfileId, setActiveProfileId] = useState<string>("default");
+    const [mobileModalVisible, setMobileModalVisible] = useState(false);
+    const [mobileInput, setMobileInput] = useState('');
+    const [mobileLoading, setMobileLoading] = useState(false);
+
+    const applyProfiles = useCallback((result: any) => {
+        if (Array.isArray(result.profiles) && result.profiles.length > 0) {
+            setProfiles(result.profiles);
+            if (result.activeProfileId && result.profiles.find((p: any) => p.id === result.activeProfileId)) {
+                setActiveProfileId(result.activeProfileId);
+            } else {
+                setActiveProfileId(result.profiles[0].id);
+            }
+        }
+    }, []);
+
+    const fetchProfiles = useCallback(async (mobile?: string) => {
+        try {
+            const url = mobile
+                ? `/data/api/config/profiles?mobile=${encodeURIComponent(mobile)}`
+                : '/data/api/config/profiles';
+            const res = await fetch(url);
+            const result = await res.json();
+            if (result.success) {
+                applyProfiles(result);
+            } else if (result.needsMobile) {
+                setMobileModalVisible(true);
+            } else {
+                Message.error(result.error || '无法加载配置');
+            }
+        } catch (e) {
+            console.error("Failed to load profiles from server", e);
+            Message.error("无法加载服务器配置，请检查网络");
+        }
+    }, [applyProfiles]);
 
     // Load profiles from server on mount
     useEffect(() => {
-        const fetchProfiles = async () => {
-            try {
-                const res = await fetch('/data/api/config/profiles');
-                const result = await res.json();
-
-                if (result.success) {
-                    if (Array.isArray(result.profiles) && result.profiles.length > 0) {
-                        setProfiles(result.profiles);
-                        if (result.activeProfileId && result.profiles.find((p: any) => p.id === result.activeProfileId)) {
-                            setActiveProfileId(result.activeProfileId);
-                        } else {
-                            setActiveProfileId(result.profiles[0].id);
-                        }
-                        console.log("[ProfileContext] Profiles loaded from server:", result.profiles);
-                    } else {
-                        console.log("[ProfileContext] No profiles on server, using default");
-                    }
-                }
-            } catch (e) {
-                console.error("Failed to load profiles from server", e);
-                Message.error("无法加载服务器配置，请检查网络");
-            }
-        };
-
         fetchProfiles();
-    }, []);
+    }, [fetchProfiles]);
+
+    const handleMobileSubmit = async () => {
+        if (!mobileInput.trim()) return;
+        setMobileLoading(true);
+        try {
+            await fetchProfiles(mobileInput.trim());
+            setMobileModalVisible(false);
+            setMobileInput('');
+        } catch (e) {
+            Message.error('网络错误，请重试');
+        } finally {
+            setMobileLoading(false);
+        }
+    };
 
     const persistProfiles = async (newProfiles: ConfigProfile[], newActiveId: string) => {
         try {
@@ -102,12 +126,20 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         persistProfiles(updatedProfiles, activeProfileId);
     };
 
-    const handleAddProfile = (name: string) => {
-        const newProfile = { ...DEFAULT_PROFILE, id: Date.now().toString(), name };
-        const updatedProfiles = [...profiles, newProfile];
-        setProfiles(updatedProfiles);
-        setActiveProfileId(newProfile.id);
-        persistProfiles(updatedProfiles, newProfile.id);
+    const handleAddProfile = async (profileData: Omit<ConfigProfile, 'id'>) => {
+        const res = await fetch('/data/api/config/profiles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ profile: profileData }),
+        });
+        const result = await res.json();
+        if (!result.success) {
+            throw new Error(result.error || 'CRM 创建失败');
+        }
+        await fetchProfiles();
+        if (result.id) {
+            handleSetActiveProfileId(result.id);
+        }
     };
 
     const handleDeleteProfile = (id: string) => {
@@ -149,6 +181,26 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
             saveProfiles
         }}>
             {children}
+            <Modal
+                title="请输入您的手机号"
+                visible={mobileModalVisible}
+                onOk={handleMobileSubmit}
+                confirmLoading={mobileLoading}
+                onCancel={() => setMobileModalVisible(false)}
+                okText="确认"
+                cancelText="取消"
+            >
+                <p style={{ marginBottom: 12, color: 'var(--color-text-2)' }}>
+                    请输入您在纷享销客中注册的手机号，用于查询您的账号信息。
+                </p>
+                <Input
+                    placeholder="请输入手机号"
+                    value={mobileInput}
+                    onChange={setMobileInput}
+                    onPressEnter={handleMobileSubmit}
+                    maxLength={20}
+                />
+            </Modal>
         </ProfileContext.Provider>
     );
 }

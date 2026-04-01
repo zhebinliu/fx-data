@@ -95,6 +95,8 @@ export async function GET(request: Request) {
         const profile = await getUserInfo(corpAccessToken, openUserId);
         const displayName = profile.name || profile.nickName || profile.account || openUserId;
 
+        const mobile = profile.mobilePhone || profile.data?.mobilePhone || '';
+
         const users = await getUsers();
         let user = users.find(u => u.username === `fx_${openUserId}`);
         if (!user) {
@@ -103,10 +105,14 @@ export async function GET(request: Request) {
                 username: `fx_${openUserId}`,
                 role: 'user',
                 name: displayName,
+                mobile,
                 permissions: ['import', 'update', 'query', 'process', 'workflow'],
                 preferences: { theme: 'light', primaryColor: '#165DFF' },
             } as User;
             users.push(user);
+            await saveUsers(users);
+        } else if (mobile && !user.mobile) {
+            user.mobile = mobile;
             await saveUsers(users);
         }
 

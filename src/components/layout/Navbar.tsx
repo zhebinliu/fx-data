@@ -34,20 +34,14 @@ const routeNames: Record<string, string> = {
 };
 
 export function Navbar() {
-    const { profiles, activeProfileId, setActiveProfileId, addProfile } = useProfiles();
+    const { profiles, activeProfileId, setActiveProfileId } = useProfiles();
     const { user, logout } = useAuth();
     const [modalVisible, setModalVisible] = useState(false);
+    const [addModalVisible, setAddModalVisible] = useState(false);
     const [helpModalVisible, setHelpModalVisible] = useState(false);
     const pathname = usePathname();
 
     const currentPageName = routeNames[pathname] || '当前页面';
-
-    const handleAddProfile = () => {
-        const name = prompt("请输入新配置名称:", "新配置");
-        if (name) {
-            addProfile(name);
-        }
-    };
 
     const userMenu = (
         <Menu>
@@ -91,7 +85,7 @@ export function Navbar() {
                 </Space>
 
                 <Space>
-                    <Button type="text" icon={<IconPlus />} onClick={handleAddProfile}>
+                    <Button type="text" icon={<IconPlus />} onClick={() => setAddModalVisible(true)}>
                         新建配置
                     </Button>
                     <Tooltip content="配置帮助">
@@ -109,6 +103,7 @@ export function Navbar() {
             </Space>
             
             <ProfileModal visible={modalVisible} onVisibleChange={setModalVisible} />
+            <ProfileModal visible={addModalVisible} onVisibleChange={setAddModalVisible} mode="add" />
             <HelpModal visible={helpModalVisible} onCancel={() => setHelpModalVisible(false)} />
         </Header>
     );

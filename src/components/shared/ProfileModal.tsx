@@ -7,25 +7,31 @@ import { useProfiles } from '@/context/ProfileContext';
 interface ProfileModalProps {
     visible: boolean;
     onVisibleChange: (visible: boolean) => void;
+    mode?: 'add' | 'edit';
 }
 
 const FormItem = Form.Item;
 
-export function ProfileModal({ visible, onVisibleChange }: ProfileModalProps) {
-    const { activeProfile, updateProfile, saveProfiles, deleteProfile } = useProfiles();
+export function ProfileModal({ visible, onVisibleChange, mode = 'edit' }: ProfileModalProps) {
+    const { activeProfile, updateProfile, saveProfiles, deleteProfile, addProfile } = useProfiles();
     const [form] = Form.useForm();
+    const isAdd = mode === 'add';
 
     useEffect(() => {
-        if (visible && activeProfile) {
-            form.setFieldsValue({
-                name: activeProfile.name,
-                appId: activeProfile.appId,
-                appSecret: activeProfile.appSecret,
-                permanentCode: activeProfile.permanentCode,
-                currentOpenUserId: activeProfile.currentOpenUserId,
-            });
+        if (visible) {
+            if (isAdd) {
+                form.resetFields();
+            } else if (activeProfile) {
+                form.setFieldsValue({
+                    name: activeProfile.name,
+                    appId: activeProfile.appId,
+                    appSecret: activeProfile.appSecret,
+                    permanentCode: activeProfile.permanentCode,
+                    currentOpenUserId: activeProfile.currentOpenUserId,
+                });
+            }
         }
-    }, [visible, activeProfile, form]);
+    }, [visible, isAdd, activeProfile, form]);
 
     const [mobile, setMobile] = useState('');
     const [loadingId, setLoadingId] = useState(false);
@@ -85,14 +91,24 @@ export function ProfileModal({ visible, onVisibleChange }: ProfileModalProps) {
         }
     };
 
+    const [saving, setSaving] = useState(false);
+
     const handleSave = async () => {
         try {
             const values = await form.validate();
-            updateProfile(values);
-            saveProfiles();
+            setSaving(true);
+            if (isAdd) {
+                await addProfile(values);
+                Message.success('配置已创建');
+            } else {
+                updateProfile(values);
+                saveProfiles();
+            }
             onVisibleChange(false);
-        } catch (error) {
-            console.error('Validation failed:', error);
+        } catch (error: any) {
+            if (error?.message) Message.error(error.message);
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -110,21 +126,23 @@ export function ProfileModal({ visible, onVisibleChange }: ProfileModalProps) {
 
     return (
         <Modal
-            title="配置详情"
+            title={isAdd ? '新建配置' : '配置详情'}
             visible={visible}
             onOk={handleSave}
             onCancel={() => onVisibleChange(false)}
             footer={
                 <div className="flex justify-between w-full">
-                    <Button status="danger" onClick={handleDelete}>
-                        删除此配置
-                    </Button>
+                    {!isAdd ? (
+                        <Button status="danger" onClick={handleDelete}>
+                            删除此配置
+                        </Button>
+                    ) : <span />}
                     <div>
                         <Button onClick={() => onVisibleChange(false)} className="mr-2">
                             取消
                         </Button>
-                        <Button type="primary" onClick={handleSave}>
-                            保存更改
+                        <Button type="primary" onClick={handleSave} loading={saving}>
+                            {isAdd ? '创建配置' : '保存更改'}
                         </Button>
                     </div>
                 </div>
