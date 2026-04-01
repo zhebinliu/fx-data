@@ -57,7 +57,6 @@ export default function LoginPage() {
                     <Typography.Text className="text-gray-400">fxcrm-import-tool</Typography.Text>
                 </div>
 
-                {/* 纷享免登按钮 */}
                 <Button
                     type="primary"
                     long
@@ -73,20 +72,11 @@ export default function LoginPage() {
 
                 <Form form={form} onSubmit={handleSubmit} layout="vertical">
                     <Form.Item field="username" rules={[{ required: true, message: '请输入用户名' }]}>
-                        <Input
-                            prefix={<IconUser />}
-                            placeholder="用户名"
-                            size="large"
-                        />
+                        <Input prefix={<IconUser />} placeholder="用户名" size="large" />
                     </Form.Item>
                     <Form.Item field="password" rules={[{ required: true, message: '请输入密码' }]}>
-                        <Input.Password
-                            prefix={<IconLock />}
-                            placeholder="密码"
-                            size="large"
-                        />
+                        <Input.Password prefix={<IconLock />} placeholder="密码" size="large" />
                     </Form.Item>
-
                     <Form.Item className="mb-0">
                         <Button type="secondary" htmlType="submit" long size="large" loading={loading}>
                             立即登录
