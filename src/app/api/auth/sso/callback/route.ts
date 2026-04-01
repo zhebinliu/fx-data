@@ -26,22 +26,42 @@ async function getCorpAccessToken(): Promise<string> {
     return data.corpAccessToken;
 }
 
-// 第二步：用免登码 (FSCOD_) 换取用户信息（纷享 Open API 流程）
-async function getUserByCode(corpAccessToken: string, code: string): Promise<any> {
-    const res = await fetch(`${FX_API_BASE}/cgi/user/getByCode`, {
+// 第二步：用免登码 (FSCOD_) 换取 openUserId
+async function getOpenUserIdByCode(corpAccessToken: string, code: string): Promise<string> {
+    const res = await fetch(`${FX_API_BASE}/oauth2.0/getUserInfoByCode`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            corpId: process.env.FX_CORP_ID,
+            corpAccessToken,
+            code,
+            appId: process.env.FX_APP_ID,
+            appSecret: process.env.FX_APP_SECRET,
+        }),
+    });
+    const data = await res.json();
+    if (data.errorCode !== 0 || !data.data) {
+        throw new Error(`通过 code 获取 openUserId 失败: ${JSON.stringify(data)}`);
+    }
+    return data.data; // openUserId
+}
+
+// 第三步：用 openUserId 获取用户详细信息
+async function getUserInfo(corpAccessToken: string, openUserId: string): Promise<any> {
+    const res = await fetch(`${FX_API_BASE}/cgi/user/get`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             corpAccessToken,
             corpId: process.env.FX_CORP_ID,
-            code,
+            openUserId,
         }),
     });
     const data = await res.json();
-    if (data.errorCode !== 0 || !data.userInfo) {
-        throw new Error(`获取用户信息失败: ${JSON.stringify(data)}`);
+    if (data.errorCode !== 0) {
+        throw new Error(`获取用户详细信息失败: ${JSON.stringify(data)}`);
     }
-    return data.userInfo;
+    return data;
 }
 
 // Session 编码（与 auth.ts 保持一致）
@@ -63,17 +83,14 @@ export async function GET(request: Request) {
         // 1. 获取企业 corpAccessToken
         const corpAccessToken = await getCorpAccessToken();
 
-        // 2. 用免登码换取纷享用户信息
-        const profile = await getUserByCode(corpAccessToken, code);
+        // 2. 用免登码换取 openUserId
+        const openUserId = await getOpenUserIdByCode(corpAccessToken, code);
 
-        // 用 openUserId 作为纷享用户的唯一标识
-        const openUserId = profile.openUserId || profile.userId || profile.id;
-        if (!openUserId) {
-            throw new Error(`无法获取用户唯一标识，返回数据: ${JSON.stringify(profile)}`);
-        }
-        const displayName = profile.name || profile.fullName || profile.nickname || openUserId;
+        // 3. 用 openUserId 获取用户详细信息
+        const profile = await getUserInfo(corpAccessToken, openUserId);
+        const displayName = profile.name || profile.nickName || profile.account || openUserId;
 
-        // 3. 在本地 users.json 中查找或自动创建该纷享用户
+        // 4. 在本地 users.json 中查找或自动创建该纷享用户
         const users = await getUsers();
         let user = users.find(u => u.username === `fx_${openUserId}`);
 
