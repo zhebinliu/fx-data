@@ -24,6 +24,11 @@ docker-compose down
 echo "🔨 构建 Docker 镜像..."
 docker-compose build --no-cache
 
+# 修复文件权限问题：提前在宿主机建立 data 目录并赋予与容器内 nextjs 用户(UID 1001)相匹配的权限，避免 EACCESS 报错
+echo "🔐 配置宿主机持久化目录权限..."
+mkdir -p data
+sudo chown -R 1001:1001 data
+
 # 启动容器
 echo "▶️  启动容器..."
 docker-compose up -d
