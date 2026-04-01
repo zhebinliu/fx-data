@@ -1,14 +1,24 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Card, Input, Button, Message, Typography, Form, Space } from '@arco-design/web-react';
+import React, { useState, useEffect } from 'react';
+import { Card, Input, Button, Message, Typography, Form, Divider } from '@arco-design/web-react';
 import { IconUser, IconLock, IconSafe } from '@arco-design/web-react/icon';
 import { useAuth } from '@/context/AuthContext';
+import { useSearchParams } from 'next/navigation';
 
 export default function LoginPage() {
     const { login } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [ssoLoading, setSsoLoading] = useState(false);
     const [form] = Form.useForm();
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const error = searchParams.get('error');
+        if (error) {
+            Message.error(decodeURIComponent(error));
+        }
+    }, [searchParams]);
 
     const handleSubmit = async (values: any) => {
         setLoading(true);
@@ -33,6 +43,11 @@ export default function LoginPage() {
         }
     };
 
+    const handleSSOLogin = () => {
+        setSsoLoading(true);
+        window.location.href = '/data/api/auth/sso';
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg-1)] bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
             <Card className="w-full max-w-md shadow-lg p-4" bordered={false}>
@@ -41,6 +56,20 @@ export default function LoginPage() {
                     <Typography.Title heading={4} className="m-0">工具库登录</Typography.Title>
                     <Typography.Text className="text-gray-400">fxcrm-import-tool</Typography.Text>
                 </div>
+
+                {/* 纷享免登按钮 */}
+                <Button
+                    type="primary"
+                    long
+                    size="large"
+                    loading={ssoLoading}
+                    onClick={handleSSOLogin}
+                    style={{ marginBottom: 16, background: '#FF6A00', borderColor: '#FF6A00' }}
+                >
+                    🚀 使用纷享账号一键登录
+                </Button>
+
+                <Divider style={{ margin: '16px 0', color: '#aaa', fontSize: 12 }}>或使用账号密码登录</Divider>
 
                 <Form form={form} onSubmit={handleSubmit} layout="vertical">
                     <Form.Item field="username" rules={[{ required: true, message: '请输入用户名' }]}>
@@ -59,7 +88,7 @@ export default function LoginPage() {
                     </Form.Item>
 
                     <Form.Item className="mb-0">
-                        <Button type="primary" htmlType="submit" long size="large" loading={loading}>
+                        <Button type="secondary" htmlType="submit" long size="large" loading={loading}>
                             立即登录
                         </Button>
                     </Form.Item>
