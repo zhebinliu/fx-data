@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { getUsers, saveUsers, SESSION_COOKIE_NAME } from '@/lib/auth';
 import type { User } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
@@ -108,17 +107,20 @@ export async function GET(request: Request) {
             await saveUsers(users);
         }
 
-        // 4. 设置 Session Cookie，与普通登录完全一致
+        // 4. 设置 Session Cookie — 必须直接设置在 redirect response 上，
+        //    用 cookies().set() 无效（它作用于不同的响应对象）
         const token = encodeSession(user);
-        cookies().set(SESSION_COOKIE_NAME, token, {
+        const response = NextResponse.redirect(`${baseUrl}/`);
+        response.cookies.set(SESSION_COOKIE_NAME, token, {
             httpOnly: true,
             secure: process.env.COOKIE_SECURE === 'true',
+            sameSite: 'lax',
             path: '/',
             maxAge: 60 * 60 * 24 * 7, // 7 天
         });
 
         // 5. 登录成功，跳转到首页
-        return NextResponse.redirect(`${baseUrl}/`);
+        return response;
 
     } catch (error: any) {
         console.error('SSO callback error:', error);
