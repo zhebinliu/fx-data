@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     // 生成随机 state 防止 CSRF
     const state = Math.random().toString(36).substring(2);
 
-    const authorizeUrl = new URL('https://www.fxiaoke.com/oauth2/authorize');
+    const authorizeUrl = new URL('https://open.fxiaoke.com/oauth2.0/authorize');
     authorizeUrl.searchParams.set('response_type', 'code');
     authorizeUrl.searchParams.set('appid', appId);
     authorizeUrl.searchParams.set('redirect_uri', redirectUri);
