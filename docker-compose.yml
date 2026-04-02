@@ -20,6 +20,8 @@ services:
       - FX_REDIRECT_URI=https://sharewb.cloud/data/api/auth/sso/callback
       # 如有永久授权码则填写，企业自建应用通常留空
       - FX_PERMANENT_CODE=E6EAB924E01C5C635828E4AFAA2197AD
+      # 用于查询配置数据的管理员 openUserId
+      - FX_ADMIN_OPEN_USER_ID=FSUID_4237F489A4E9D9D31860EE93D7674723
       - COOKIE_SECURE=true
       - HOSTNAME=0.0.0.0
     # 如果需要持久化数据，可以添加 volumes
