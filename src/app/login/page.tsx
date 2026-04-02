@@ -27,6 +27,7 @@ export default function LoginPage() {
                 .then(r => r.json())
                 .then(data => {
                     if (data.success) {
+                        sessionStorage.removeItem('sso_attempted');
                         login(data.user);
                     } else {
                         Message.error('SSO 登录失败: ' + (data.error || '未知错误'));
@@ -34,6 +35,15 @@ export default function LoginPage() {
                 })
                 .catch(() => Message.error('SSO 登录失败，请重试'))
                 .finally(() => setSsoLoading(false));
+            return;
+        }
+
+        // 自动尝试 SSO 登录（无 error、无 sso_token 时触发）
+        // 用 sessionStorage 标记避免 SSO 失败后无限循环跳转
+        const ssoAttempted = sessionStorage.getItem('sso_attempted');
+        if (!ssoAttempted) {
+            sessionStorage.setItem('sso_attempted', '1');
+            window.location.href = '/data/api/auth/sso';
         }
     }, [searchParams]);
 
