@@ -117,9 +117,17 @@ export async function GET(request: Request) {
             } as User;
             users.push(user);
             await saveUsers(users);
-        } else if (mobile && !user.mobile) {
-            user.mobile = mobile;
-            await saveUsers(users);
+        } else {
+            let changed = false;
+            if (displayName && user.name !== displayName) {
+                user.name = displayName;
+                changed = true;
+            }
+            if (mobile && !user.mobile) {
+                user.mobile = mobile;
+                changed = true;
+            }
+            if (changed) await saveUsers(users);
         }
 
         // 生成一次性 token，重定向到 login 页面通过同源 fetch 换取 cookie
