@@ -98,8 +98,10 @@ export async function GET(request: Request) {
         console.log('[SSO Callback] openUserId:', openUserId);
 
         const profile = await getUserInfo(corpAccessToken, openUserId);
-        const displayName = profile.name || profile.nickName || profile.account || openUserId;
-        const mobile = profile.mobilePhone || profile.data?.mobilePhone || '';
+        const userData = profile.data || profile;
+        console.log('[SSO Callback] userData:', JSON.stringify({ name: userData.name, nickName: userData.nickName, mobilePhone: userData.mobilePhone }));
+        const displayName = userData.name || userData.nickName || userData.account || openUserId;
+        const mobile = userData.mobilePhone || '';
 
         const users = await getUsers();
         let user = users.find(u => u.username === `fx_${openUserId}`);
