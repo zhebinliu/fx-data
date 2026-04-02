@@ -1,14 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getUsers, saveUsers } from '@/lib/auth';
+import { getUsers, saveUsers, SESSION_COOKIE_NAME } from '@/lib/auth';
 import type { User } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
-import fs from 'fs/promises';
-import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
 const FX_API_BASE = 'https://open.fxiaoke.com';
-const TOKENS_FILE = path.join(process.cwd(), 'data', 'sso_tokens.json');
 
 async function getCorpAccessToken(): Promise<string> {
     const res = await fetch(`${FX_API_BASE}/cgi/corpAccessToken/get/V2`, {
@@ -63,20 +60,9 @@ async function getUserInfo(corpAccessToken: string, openUserId: string): Promise
     return data;
 }
 
-// 保存一次性 token（60 秒有效）
-async function saveSsoToken(token: string, userId: string): Promise<void> {
-    let tokens: Record<string, { userId: string; expiresAt: number }> = {};
-    try {
-        const raw = await fs.readFile(TOKENS_FILE, 'utf-8');
-        tokens = JSON.parse(raw);
-    } catch {}
-    // 清理过期 token
-    const now = Date.now();
-    for (const k of Object.keys(tokens)) {
-        if (tokens[k].expiresAt < now) delete tokens[k];
-    }
-    tokens[token] = { userId, expiresAt: now + 60_000 };
-    await fs.writeFile(TOKENS_FILE, JSON.stringify(tokens), 'utf-8');
+// Session 编码（与 auth.ts 保持一致）
+function encodeSession(user: User): string {
+    return Buffer.from(`${user.id}:${user.role}:${user.username}`).toString('base64');
 }
 
 export async function GET(request: Request) {
@@ -92,9 +78,11 @@ export async function GET(request: Request) {
     try {
         const corpAccessToken = await getCorpAccessToken();
         const openUserId = await getOpenUserIdByCode(corpAccessToken, code);
+
+        console.log('[SSO Callback] openUserId:', openUserId);
+
         const profile = await getUserInfo(corpAccessToken, openUserId);
         const displayName = profile.name || profile.nickName || profile.account || openUserId;
-
         const mobile = profile.mobilePhone || profile.data?.mobilePhone || '';
 
         const users = await getUsers();
@@ -116,11 +104,21 @@ export async function GET(request: Request) {
             await saveUsers(users);
         }
 
-        // 生成一次性 token，重定向到登录页由前端完成同源 cookie 设置
-        const ssoToken = uuidv4();
-        await saveSsoToken(ssoToken, user.id);
+        // 直接设置 Session Cookie 并跳转首页（不走 sso_token 中转）
+        const token = encodeSession(user);
+        const redirectUrl = `${baseUrl}/`;
+        const response = NextResponse.redirect(redirectUrl);
 
-        return NextResponse.redirect(`${baseUrl}/login?sso_token=${ssoToken}`);
+        response.cookies.set(SESSION_COOKIE_NAME, token, {
+            httpOnly: true,
+            secure: process.env.COOKIE_SECURE === 'true',
+            sameSite: 'lax',
+            path: '/',
+            maxAge: 60 * 60 * 24 * 7, // 7 天
+        });
+
+        console.log('[SSO Callback] Cookie set for user:', user.name, '→ redirect to', redirectUrl);
+        return response;
 
     } catch (error: any) {
         console.error('SSO callback error:', error);

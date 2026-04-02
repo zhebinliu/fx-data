@@ -32,24 +32,23 @@ export async function GET(request: Request) {
             return NextResponse.json({ success: false, error: '缺少 FxCRM 配置，请检查环境变量' }, { status: 500 });
         }
 
-        // 优先使用管理员 openUserId 查询配置（配置数据需要管理员权限才能读取）
-        let queryUserId = process.env.FX_ADMIN_OPEN_USER_ID || '';
+        // 使用 SSO 用户自己的 openUserId 查询配置
+        let queryUserId = '';
 
-        if (!queryUserId) {
-            // 回退：SSO 用户用自己的 openUserId
-            if (user.username.startsWith('fx_')) {
-                queryUserId = user.username.replace(/^fx_/, '');
-            } else {
-                const mobile = new URL(request.url).searchParams.get('mobile');
-                if (!mobile) {
-                    return NextResponse.json({ success: false, needsMobile: true });
-                }
-                const mainClient = new FxClient({ appId, appSecret, permanentCode });
-                const mobileRes = await mainClient.post('/cgi/user/getByMobile', { mobile });
-                queryUserId = mobileRes.empList?.[0]?.openUserId || '';
-                if (!queryUserId) {
-                    return NextResponse.json({ success: false, error: '该手机号在系统中未找到对应用户' }, { status: 404 });
-                }
+        if (user.username.startsWith('fx_')) {
+            // SSO 用户：直接从 username 提取 openUserId
+            queryUserId = user.username.replace(/^fx_/, '');
+        } else {
+            // 非 SSO 用户：需要手机号查询 openUserId
+            const mobile = new URL(request.url).searchParams.get('mobile');
+            if (!mobile) {
+                return NextResponse.json({ success: false, needsMobile: true });
+            }
+            const mainClient = new FxClient({ appId, appSecret, permanentCode });
+            const mobileRes = await mainClient.post('/cgi/user/getByMobile', { mobile });
+            queryUserId = mobileRes.empList?.[0]?.openUserId || '';
+            if (!queryUserId) {
+                return NextResponse.json({ success: false, error: '该手机号在系统中未找到对应用户' }, { status: 404 });
             }
         }
 
