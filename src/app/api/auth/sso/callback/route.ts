@@ -111,8 +111,8 @@ export async function GET(request: Request) {
 
         response.cookies.set(SESSION_COOKIE_NAME, token, {
             httpOnly: true,
-            secure: process.env.COOKIE_SECURE === 'true',
-            sameSite: 'lax',
+            secure: true, // SameSite=None 必须配合 Secure
+            sameSite: 'none', // 允许在纷享 CRM iframe 中发送 cookie
             path: '/',
             maxAge: 60 * 60 * 24 * 7, // 7 天
         });

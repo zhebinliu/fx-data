@@ -114,8 +114,8 @@ export async function login(username: string, password: string): Promise<User | 
     const token = encodeSession(user);
     cookies().set(SESSION_COOKIE_NAME, token, {
         httpOnly: true,
-        // Default to false for easier deployment. Set COOKIE_SECURE='true' in .env/docker for HTTPS.
-        secure: process.env.COOKIE_SECURE === 'true',
+        secure: true, // SameSite=None 必须配合 Secure
+        sameSite: 'none', // 允许在纷享 CRM iframe 中发送 cookie
         path: '/',
         maxAge: 60 * 60 * 24 * 7 // 7 days
     });
