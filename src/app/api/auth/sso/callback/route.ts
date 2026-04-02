@@ -10,6 +10,7 @@ const FX_API_BASE = 'https://open.fxiaoke.com';
 async function getCorpAccessToken(): Promise<string> {
     const res = await fetch(`${FX_API_BASE}/cgi/corpAccessToken/get/V2`, {
         method: 'POST',
+        cache: 'no-store',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             appId: process.env.FX_APP_ID,
@@ -27,6 +28,7 @@ async function getCorpAccessToken(): Promise<string> {
 async function getOpenUserIdByCode(corpAccessToken: string, code: string): Promise<string> {
     const res = await fetch(`${FX_API_BASE}/oauth2.0/getUserInfoByCode`, {
         method: 'POST',
+        cache: 'no-store',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             corpId: process.env.FX_CORP_ID,
@@ -46,6 +48,7 @@ async function getOpenUserIdByCode(corpAccessToken: string, code: string): Promi
 async function getUserInfo(corpAccessToken: string, openUserId: string): Promise<any> {
     const res = await fetch(`${FX_API_BASE}/cgi/user/get`, {
         method: 'POST',
+        cache: 'no-store',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             corpAccessToken,
