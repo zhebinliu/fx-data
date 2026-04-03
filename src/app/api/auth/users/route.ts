@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { getUsers, saveUsers, requireAdmin } from '@/lib/auth';
+import { getUsers, updateUsersAtomic, requireAdmin } from '@/lib/auth';
 
 // LIST USERS
 export async function GET() {
@@ -27,22 +27,18 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 });
         }
 
-        const users = await getUsers();
-        if (users.find(u => u.username === username)) {
-            return NextResponse.json({ success: false, error: "Username already exists" }, { status: 400 });
+        let newUser: any;
+        try {
+            await updateUsersAtomic(users => {
+                if (users.find(u => u.username === username)) throw new Error('USERNAME_EXISTS');
+                newUser = { id: Date.now().toString(), username, password, name, role: role || 'user', permissions: permissions || [] };
+                users.push(newUser);
+                return users;
+            });
+        } catch (e: any) {
+            if (e.message === 'USERNAME_EXISTS') return NextResponse.json({ success: false, error: "Username already exists" }, { status: 400 });
+            throw e;
         }
-
-        const newUser = {
-            id: Date.now().toString(),
-            username,
-            password, // In real app, hash this
-            name,
-            role: role || 'user',
-            permissions: permissions || []
-        };
-
-        users.push(newUser);
-        await saveUsers(users);
 
         const { password: _, ...safeUser } = newUser;
         return NextResponse.json({ success: true, user: safeUser });
@@ -61,23 +57,22 @@ export async function PUT(request: Request) {
         const body = await request.json();
         const { id, password, name, role, permissions } = body;
 
-        const users = await getUsers();
-        const userIndex = users.findIndex(u => u.id === id);
-
-        if (userIndex === -1) {
-            return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
+        try {
+            await updateUsersAtomic(users => {
+                const idx = users.findIndex(u => u.id === id);
+                if (idx === -1) throw new Error('NOT_FOUND');
+                const u = { ...users[idx] };
+                if (password) u.password = password;
+                if (name) u.name = name;
+                if (role) u.role = role;
+                if (permissions) u.permissions = permissions;
+                users[idx] = u;
+                return users;
+            });
+        } catch (e: any) {
+            if (e.message === 'NOT_FOUND') return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
+            throw e;
         }
-
-        // Prevent modifying self role to non-admin if you are the only admin (optional safety, skipped for simplicity)
-
-        const updatedUser = { ...users[userIndex] };
-        if (password) updatedUser.password = password;
-        if (name) updatedUser.name = name;
-        if (role) updatedUser.role = role;
-        if (permissions) updatedUser.permissions = permissions;
-
-        users[userIndex] = updatedUser;
-        await saveUsers(users);
 
         return NextResponse.json({ success: true });
 
@@ -98,14 +93,17 @@ export async function DELETE(request: Request) {
         if (!id) return NextResponse.json({ success: false, error: "Missing ID" }, { status: 400 });
         if (id === admin.id) return NextResponse.json({ success: false, error: "Cannot delete yourself" }, { status: 400 });
 
-        const users = await getUsers();
-        const newUsers = users.filter(u => u.id !== id);
-
-        if (newUsers.length === users.length) {
-            return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
+        try {
+            await updateUsersAtomic(users => {
+                const next = users.filter(u => u.id !== id);
+                if (next.length === users.length) throw new Error('NOT_FOUND');
+                return next;
+            });
+        } catch (e: any) {
+            if (e.message === 'NOT_FOUND') return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
+            throw e;
         }
 
-        await saveUsers(newUsers);
         return NextResponse.json({ success: true });
 
     } catch (error) {

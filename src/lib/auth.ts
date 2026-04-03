@@ -66,9 +66,30 @@ export async function getUsers(): Promise<User[]> {
     }
 }
 
+// Serialize all read-modify-write operations to prevent concurrent overwrites
+let userFileLock: Promise<void> = Promise.resolve();
+
+function withUserLock<T>(fn: () => Promise<T>): Promise<T> {
+    let resolve!: () => void;
+    const next = new Promise<void>(r => { resolve = r; });
+    const result = userFileLock.then(fn).finally(resolve);
+    userFileLock = next;
+    return result;
+}
+
 export async function saveUsers(users: User[]): Promise<void> {
     await ensureDataDir();
     await fs.writeFile(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
+}
+
+// Atomic read-modify-write: prevents race conditions when multiple requests update users concurrently
+export async function updateUsersAtomic(updater: (users: User[]) => User[] | Promise<User[]>): Promise<User[]> {
+    return withUserLock(async () => {
+        const users = await getUsers();
+        const updated = await updater(users);
+        await saveUsers(updated);
+        return updated;
+    });
 }
 
 export async function updateUser(id: string, updates: Partial<User>): Promise<User | null> {
@@ -141,7 +162,7 @@ export async function getCurrentUser(): Promise<User | null> {
 
     // SSO 用户 session 有效但 users.json 里找不到（如重新部署后数据丢失），自动重建
     if (!user && session.username.startsWith('fx_')) {
-        user = {
+        const rebuilt: User = {
             id: session.id,
             username: session.username,
             role: 'user',
@@ -149,8 +170,11 @@ export async function getCurrentUser(): Promise<User | null> {
             permissions: ['import', 'update', 'query', 'process', 'workflow'],
             preferences: { theme: 'light', primaryColor: '#165DFF' },
         };
-        users.push(user);
-        await saveUsers(users);
+        await updateUsersAtomic(all => {
+            if (!all.find(u => u.id === rebuilt.id)) all.push(rebuilt);
+            return all;
+        });
+        user = rebuilt;
     }
 
     if (!user) return null;

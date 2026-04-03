@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getUsers, saveUsers } from '@/lib/auth';
+import { updateUsersAtomic } from '@/lib/auth';
 import type { User } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs/promises';
@@ -103,32 +103,28 @@ export async function GET(request: Request) {
         const displayName = userData.name || userData.nickName || userData.account || openUserId;
         const mobile = userData.mobilePhone || '';
 
-        const users = await getUsers();
-        let user = users.find(u => u.username === `fx_${openUserId}`);
-        if (!user) {
-            user = {
-                id: uuidv4(),
-                username: `fx_${openUserId}`,
-                role: 'user',
-                name: displayName,
-                mobile,
-                permissions: ['import', 'update', 'query', 'process', 'workflow'],
-                preferences: { theme: 'light', primaryColor: '#165DFF' },
-            } as User;
-            users.push(user);
-            await saveUsers(users);
-        } else {
-            let changed = false;
-            if (displayName && user.name !== displayName) {
-                user.name = displayName;
-                changed = true;
+        let user: User;
+        await updateUsersAtomic(users => {
+            let u = users.find(u => u.username === `fx_${openUserId}`);
+            if (!u) {
+                u = {
+                    id: uuidv4(),
+                    username: `fx_${openUserId}`,
+                    role: 'user',
+                    name: displayName,
+                    mobile,
+                    permissions: ['import', 'update', 'query', 'process', 'workflow'],
+                    preferences: { theme: 'light', primaryColor: '#165DFF' },
+                } as User;
+                users.push(u);
+            } else {
+                if (displayName && u.name !== displayName) u.name = displayName;
+                if (mobile && !u.mobile) u.mobile = mobile;
             }
-            if (mobile && !user.mobile) {
-                user.mobile = mobile;
-                changed = true;
-            }
-            if (changed) await saveUsers(users);
-        }
+            user = u;
+            return users;
+        });
+        user = user!;
 
         // 生成一次性 token，重定向到 login 页面通过同源 fetch 换取 cookie
         // 不能直接在 redirect 响应上设 cookie（Chrome Bounce Tracking Mitigation 会拦截）
