@@ -54,8 +54,8 @@ export async function GET(request: Request) {
     const response = NextResponse.json({ success: true, user: safeUser });
     response.cookies.set(SESSION_COOKIE_NAME, sessionToken, {
         httpOnly: true,
-        secure: process.env.COOKIE_SECURE === 'true',
-        sameSite: 'lax',
+        secure: true,
+        sameSite: 'none',
         path: '/',
         maxAge: 60 * 60 * 24 * 7,
     });
