@@ -26,7 +26,7 @@ interface ProfileContextType {
     activeProfileId: string;
     activeProfile: ConfigProfile;
     setActiveProfileId: (id: string) => void;
-    updateProfile: (profile: Partial<ConfigProfile>) => void;
+    updateProfile: (profile: Partial<ConfigProfile>) => Promise<void>;
     addProfile: (profile: Omit<ConfigProfile, 'id'>) => Promise<void>;
     deleteProfile: (id: string) => void;
     saveProfiles: () => void;
@@ -116,14 +116,32 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
 
     const activeProfile = profiles.find(p => p.id === activeProfileId) || profiles[0] || DEFAULT_PROFILE;
 
-    const handleUpdateProfile = (updates: Partial<ConfigProfile>) => {
+    const handleUpdateProfile = async (updates: Partial<ConfigProfile>) => {
         console.log("[ProfileContext] Updating profile:", updates);
         const updatedProfiles = profiles.map(p =>
             p.id === activeProfileId ? { ...p, ...updates } : p
         );
         setProfiles(updatedProfiles);
-        // Auto-save to server
-        persistProfiles(updatedProfiles, activeProfileId);
+
+        // Sync to CRM
+        const updatedProfile = updatedProfiles.find(p => p.id === activeProfileId);
+        if (updatedProfile && activeProfileId !== 'default') {
+            try {
+                const res = await fetch('/data/api/config/profiles', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ updateProfile: updatedProfile }),
+                });
+                const result = await res.json();
+                if (!result.success) {
+                    console.error('[ProfileContext] CRM update failed:', result.error);
+                    Message.error('同步 CRM 失败: ' + (result.error || '未知错误'));
+                }
+            } catch (e) {
+                console.error('[ProfileContext] CRM update error:', e);
+                Message.error('同步 CRM 失败，请检查网络');
+            }
+        }
     };
 
     const handleAddProfile = async (profileData: Omit<ConfigProfile, 'id'>) => {

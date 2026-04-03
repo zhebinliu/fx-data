@@ -176,6 +176,43 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: true, id: newId });
         }
 
+        // CRM update: body contains 'updateProfile' with id and fields
+        if (body.updateProfile) {
+            if (!user.username.startsWith('fx_')) {
+                return NextResponse.json({ success: false, error: '请通过纷享 SSO 登录以更新配置' }, { status: 403 });
+            }
+            const queryUserId = user.username.replace(/^fx_/, '');
+            const { id, name, appId, appSecret, permanentCode, currentOpenUserId } = body.updateProfile;
+
+            if (!id) {
+                return NextResponse.json({ success: false, error: '缺少配置 ID' }, { status: 400 });
+            }
+
+            const client = new FxClient({
+                appId: process.env.FX_APP_ID!,
+                appSecret: process.env.FX_APP_SECRET!,
+                permanentCode: process.env.FX_PERMANENT_CODE!,
+            });
+            const response = await client.post('/cgi/crm/custom/v2/data/update', {
+                currentOpenUserId: queryUserId,
+                data: {
+                    dataObjectApiName: 'crm_authentication_info__c',
+                    object_data: {
+                        _id: id,
+                        name,
+                        app_id__c: appId,
+                        app_secret__c: appSecret,
+                        permanent_authorization_co__c: permanentCode,
+                        current_user_open_user_id__c: currentOpenUserId || '',
+                    },
+                },
+            });
+            if (response.errorCode !== 0) {
+                throw new Error(response.errorMessage || 'CRM 更新失败');
+            }
+            return NextResponse.json({ success: true });
+        }
+
         // Otherwise just save activeProfileId locally
         const { activeProfileId } = body;
         let existing: any = {};

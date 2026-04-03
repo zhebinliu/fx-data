@@ -101,8 +101,8 @@ export function ProfileModal({ visible, onVisibleChange, mode = 'edit' }: Profil
                 await addProfile(values);
                 Message.success('配置已创建');
             } else {
-                updateProfile(values);
-                saveProfiles();
+                await updateProfile(values);
+                Message.success('配置已保存并同步到 CRM');
             }
             onVisibleChange(false);
         } catch (error: any) {
