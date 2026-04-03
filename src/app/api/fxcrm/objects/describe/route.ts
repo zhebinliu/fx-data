@@ -15,12 +15,8 @@ export async function POST(request: Request) {
         const client = new FxClient({ appId, appSecret, permanentCode });
         await client.getAccessToken();
 
-        // Fetch object description
-        const isCustomObject = apiName.endsWith('__c');
-        const endpoint = isCustomObject
-            ? '/cgi/crm/custom/v2/object/describe'
-            : '/cgi/crm/v2/object/describe';
-        const response = await client.post(endpoint, {
+        // Fetch object description (same endpoint for both standard and custom objects)
+        const response = await client.post('/cgi/crm/v2/object/describe', {
             apiName,
             currentOpenUserId
         });
