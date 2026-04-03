@@ -151,7 +151,7 @@ export function ProfileModal({ visible, onVisibleChange, mode = 'edit' }: Profil
             <Form
                 form={form}
                 layout="vertical"
-                initialValues={activeProfile}
+                initialValues={isAdd ? {} : activeProfile}
             >
                 <FormItem label="配置显示名称" field="name" rules={[{ required: true }]}>
                     <Input placeholder="例如：开发环境" />
