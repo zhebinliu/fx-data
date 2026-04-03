@@ -44,7 +44,7 @@ export default function UserManagementPage() {
 
     const handleSave = async (values: any) => {
         try {
-            const url = '/api/auth/users';
+            const url = '/data/api/auth/users';
             const method = editingId ? 'PUT' : 'POST';
             const body = editingId ? { ...values, id: editingId } : values;
 
