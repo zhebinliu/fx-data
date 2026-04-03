@@ -10,7 +10,7 @@ import { AIChatWidget } from "@/components/shared/AIChatWidget";
 import { usePathname } from 'next/navigation';
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
-    const [collapsed, setCollapsed] = React.useState(false);
+    const [collapsed, setCollapsed] = React.useState(true);
     const pathname = usePathname();
     const isLoginPage = pathname === '/login';
 

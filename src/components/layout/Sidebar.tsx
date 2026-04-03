@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Layout, Menu, Button, Space, Typography } from '@arco-design/web-react';
+import { Layout, Menu, Typography } from '@arco-design/web-react';
 import {
     IconHome, IconApps, IconEdit, IconSettings, IconBranch, IconUser,
-    IconImport, IconLeft, IconRight, IconSearch, IconTool,
-    IconCodeBlock, IconList, IconPlusCircle, IconFolderAdd
+    IconImport, IconLeft, IconRight, IconSearch, IconTool
 } from '@arco-design/web-react/icon';
 import { usePathname, useRouter } from 'next/navigation';
 import { SettingsModal } from '@/components/shared/SettingsModal';
@@ -28,8 +27,7 @@ export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
     const { user } = useAuth();
     
     // Auto-open active submenu on load
-    const activeSubkey = pathname.startsWith('/apl') ? 'apl-automation' : 
-                         pathname.startsWith('/admin') || pathname.startsWith('/crm') ? 'system-management' : 
+    const activeSubkey = pathname.startsWith('/admin') || pathname.startsWith('/crm') ? 'system-management' :
                          pathname !== '/' ? 'data-management' : '';
     const [openKeys, setOpenKeys] = useState<string[]>([activeSubkey]);
 
@@ -64,19 +62,6 @@ export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                 { key: '/admin/roles', icon: <IconUser />, label: '角色列表', permission: 'admin' }
             ]
         },
-        {
-            key: 'apl-automation',
-            icon: <IconCodeBlock />,
-            label: 'APL 自动化',
-            permission: PERMISSIONS.PROCESS,
-            children: [
-                { key: '/apl/dashboard', icon: <IconHome />, label: '工作台', permission: PERMISSIONS.PROCESS },
-                { key: '/apl/single', icon: <IconPlusCircle />, label: '单条生成', permission: PERMISSIONS.PROCESS },
-                { key: '/apl/batch', icon: <IconFolderAdd />, label: '批量生成', permission: PERMISSIONS.PROCESS },
-                { key: '/apl/history', icon: <IconList />, label: '历史记录', permission: PERMISSIONS.PROCESS },
-                { key: '/apl/settings', icon: <IconSettings />, label: '配置管理', permission: PERMISSIONS.PROCESS }
-            ]
-        }
     ];
 
     const generateMenu = (items: any[]) => {
