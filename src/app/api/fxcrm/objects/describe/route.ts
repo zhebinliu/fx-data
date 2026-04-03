@@ -16,8 +16,11 @@ export async function POST(request: Request) {
         await client.getAccessToken();
 
         // Fetch object description
-        // Endpoint: /cgi/crm/v2/object/describe
-        const response = await client.post('/cgi/crm/v2/object/describe', {
+        const isCustomObject = apiName.endsWith('__c');
+        const endpoint = isCustomObject
+            ? '/cgi/crm/custom/v2/object/describe'
+            : '/cgi/crm/v2/object/describe';
+        const response = await client.post(endpoint, {
             apiName,
             currentOpenUserId
         });

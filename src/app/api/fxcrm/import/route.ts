@@ -35,15 +35,27 @@ export async function POST(request: Request) {
         const processRow = async (rowWithIdx: any) => {
             const { __rowIdx, ...row } = rowWithIdx;
             try {
-                const response = await client.post('/cgi/crm/v2/data/create', {
-                    data: {
-                        object_data: row
-                    },
-                    currentOpenUserId: currentOpenUserId,
-                    triggerWorkFlow: false,
-                    object_api_name: objectApiName,
-                    apiName: objectApiName // Add this as the error suggests it's missing
-                });
+                const isCustomObject = objectApiName.endsWith('__c');
+                const apiPath = isCustomObject
+                    ? '/cgi/crm/custom/v2/data/create'
+                    : '/cgi/crm/v2/data/create';
+                const payload = isCustomObject
+                    ? {
+                        currentOpenUserId,
+                        data: {
+                            dataObjectApiName: objectApiName,
+                            object_data: row,
+                        },
+                    }
+                    : {
+                        currentOpenUserId,
+                        triggerWorkFlow: false,
+                        object_api_name: objectApiName,
+                        data: {
+                            object_data: row,
+                        },
+                    };
+                const response = await client.post(apiPath, payload);
 
                 if (response.errorCode === 0) { // FxCRM usually uses errorCode 0 for success
                     successCount++;

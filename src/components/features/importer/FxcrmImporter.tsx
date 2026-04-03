@@ -310,6 +310,13 @@ export function FxcrmImporter() {
         }
     }
 
+    // Auto-load objects when config has valid credentials
+    React.useEffect(() => {
+        if (config.appId && config.appSecret && config.permanentCode && config.currentOpenUserId && objectList.length === 0) {
+            fetchObjects();
+        }
+    }, [config.appId, config.appSecret, config.permanentCode, config.currentOpenUserId]);
+
     const fetchObjectDescription = async (apiName: string) => {
         addLog(`正在获取对象 ${apiName} 的字段列表...`)
         try {
