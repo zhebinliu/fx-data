@@ -241,8 +241,8 @@ export default function FxcrmDataQuery() {
     })
 
     return (
-        <Layout className="min-h-screen bg-[var(--color-bg-1)] p-4 sm:p-8">
-            <Content className="w-full bg-[var(--color-bg-2)] p-4 sm:p-8 rounded-sm shadow-sm relative flex flex-col h-[calc(100vh-64px)] overflow-hidden">
+        <Layout className="bg-[var(--color-bg-1)] p-4 sm:p-8">
+            <Content className="w-full bg-[var(--color-bg-2)] p-4 sm:p-8 rounded-sm shadow-sm relative flex flex-col h-[calc(100vh-92px)] overflow-hidden">
                 {/* Header */}
                 <div className="mb-6 border-b border-[var(--color-border-2)] pb-4 flex-shrink-0">
                     <div className="flex justify-between items-center">

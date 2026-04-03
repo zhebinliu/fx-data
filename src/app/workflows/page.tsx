@@ -95,7 +95,7 @@ export default function WorkflowsPage() {
     };
 
     return (
-        <Layout className="h-screen bg-[var(--color-bg-1)] p-6 overflow-auto">
+        <Layout className="bg-[var(--color-bg-1)] p-6 overflow-auto">
             <div className="max-w-6xl mx-auto w-full">
                 <div className="flex justify-between items-center mb-6">
                     <div>

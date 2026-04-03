@@ -59,7 +59,7 @@ export function DataProcessor() {
     };
 
     return (
-        <Layout className="min-h-screen bg-[var(--color-bg-1)] p-2 sm:p-4 h-screen box-border">
+        <Layout className="bg-[var(--color-bg-1)] p-2 sm:p-4 h-[calc(100vh-92px)] box-border">
             <Content className="w-full bg-[var(--color-bg-2)] rounded-sm shadow-sm overflow-hidden flex flex-col flex-1 h-full relative">
                 {!isConnected ? (
                     <div className="flex flex-col items-center justify-center h-full bg-[var(--color-fill-2)]">

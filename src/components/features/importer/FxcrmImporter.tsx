@@ -1115,7 +1115,7 @@ export function FxcrmImporter() {
     }, [allKeyedData, showOnlyFailed, rowResults]);
 
     return (
-        <Layout className="min-h-screen bg-[var(--color-bg-1)] p-4 sm:p-8">
+        <Layout className="bg-[var(--color-bg-1)] p-4 sm:p-8">
             <Content className="w-full bg-[var(--color-bg-2)] p-4 sm:p-8 rounded-sm shadow-sm relative">
                 <div className="mb-8 border-b pb-4">
                     <Title heading={3} className="m-0! flex items-center gap-2">

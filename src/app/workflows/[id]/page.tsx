@@ -190,7 +190,7 @@ export default function WorkflowBuilderPage() {
 
     return (
         <ProfileProvider>
-            <Layout className="h-[calc(100vh-64px)] -m-6 bg-[var(--color-bg-2)]">
+            <Layout className="h-[calc(100vh-60px)] -m-4 bg-[var(--color-bg-2)]">
                 <div className="bg-[var(--color-bg-2)] border-b border-[var(--color-border-2)] px-6 py-3 flex justify-between items-center shadow-sm z-10">
                     <div className="flex items-center gap-4">
                         <Button icon={<IconLeft />} onClick={() => router.push('/workflows')} />
