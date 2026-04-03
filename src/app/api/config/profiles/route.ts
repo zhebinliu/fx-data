@@ -162,6 +162,7 @@ export async function POST(request: Request) {
                     dataObjectApiName: 'crm_authentication_info__c',
                     object_data: {
                         name,
+                        owner: [queryUserId],
                         app_id__c: appId,
                         app_secret__c: appSecret,
                         permanent_authorization_co__c: permanentCode,
